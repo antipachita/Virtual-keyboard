@@ -321,24 +321,37 @@ keyBoardWrapper.addEventListener('click', (event) => {
 
 // Переключение языка
 
-document.onkeydown = function swapLang(event) {
-  if (event.code === 'Space') {
-    document.onkeyup = function Approve(target) {
-      if (target.code === 'ControlLeft') {
-        if (currentLaunguage === 0 || currentLaunguage === null || currentLaunguage === '0') {
-          currentLaunguage = 1;
-        } else {
-          currentLaunguage = 0;
-        }
-        localStorage.setItem('record', currentLaunguage);
+function runOnKeys(...codes) {
+  const pressed = new Set();
 
-        changeBtn();
-      } else {
-        document.onkeyup = null;
+  document.addEventListener('keydown', (event) => {
+    pressed.add(event.code);
+    for (let i = 0; i < codes.length; i += 1) {
+      if (!pressed.has(codes[i])) {
+        return;
       }
-    };
-  }
-};
+    }
+
+    if (currentLaunguage === 0 || currentLaunguage === null || currentLaunguage === '0') {
+      currentLaunguage = 1;
+    } else {
+      currentLaunguage = 0;
+    }
+    localStorage.setItem('record', currentLaunguage);
+
+    changeBtn();
+    pressed.clear();
+  });
+
+  document.addEventListener('keyup', (event) => {
+    pressed.delete(event.code);
+  });
+}
+
+runOnKeys(
+  'Space',
+  'ControlLeft',
+);
 
 // печать в textArea
 
